@@ -53,6 +53,7 @@ namespace cs_burger_shack.Repositories
                 quantity = @Quantity,
                 modifications = @Modifications,
                 itemType = @ItemType
+                WHERE id = @id
             ";
             int affectedRows = _db.Execute(sql, data);
             return affectedRows == 1;
