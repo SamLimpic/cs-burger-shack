@@ -1,0 +1,5 @@
+INTERFACES (I)
+
+Like Classes, Interfaces are an organizational framework that enforce adherence to server rules.
+
+Interfaces will do this by enforcing IControllers, IServices, and IRepositories that will throw errors if the Interface is not adhered to.
