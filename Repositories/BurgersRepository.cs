@@ -1,35 +1,68 @@
 using System.Collections.Generic;
+using System.Data;
 using cs_burger_shack.Interfaces;
 using cs_burger_shack.Models;
+using Dapper;
 
 namespace cs_burger_shack.Repositories
 {
-    public class BurgersRepository : IRepo<Burger>
+    public class BurgersRepository : IRepository<Burger>
     {
+
+        private readonly System.Data.IDbConnection _db;
+
+        public BurgersRepository(IDbConnection db)
+        {
+            _db = db;
+        }
+
+
 
         public IEnumerable<Burger> GetAll()
         {
-            throw new System.NotImplementedException();
+            string sql = "SELECT * FROM burgers";
+            return _db.Query<Burger>(sql);
         }
 
-        public Burger GetById(int Id)
+        public Burger GetById(int id)
         {
-            throw new System.NotImplementedException();
+            string sql = "SELECT * FROM burgers WHERE id = @id";
+            return _db.QueryFirstOrDefault<Burger>(sql, new { id });
         }
 
         public Burger Create(Burger data)
         {
-            throw new System.NotImplementedException();
+            string sql = @"
+            INSERT INTO burgers
+            (name, cost, quantity, modifications, itemType)
+            VALUES
+            (@Name, @Cost, @Quantity, @Modifications, @ItemType)
+            SELECT LAST_INSERT_ID()
+            ";
+            data.Id = _db.ExecuteScalar<int>(sql, data);
+            return data;
         }
 
-        public Burger Update(Burger data)
+        public bool Update(Burger data)
         {
-            throw new System.NotImplementedException();
+            string sql = @"
+            UPDATE burgers
+            SET
+                name = @Name,
+                cost = @Cost,
+                quantity = @Quantity,
+                modifications = @Modifications,
+                itemType = @ItemType
+            ";
+            int affectedRows = _db.Execute(sql, data);
+            return affectedRows == 1;
         }
 
-        public Burger Delete(int id)
+        public bool Delete(int id)
         {
-            throw new System.NotImplementedException();
+            string sql = "DELETE FROM burgers WHERE id = @id LIMIT 1";
+            int affectedRows = _db.Execute(sql, new { id });
+            return affectedRows == 1;
         }
     }
 }
